@@ -25,6 +25,7 @@ depends_on: [{node: r-phase-b-main, edge: needs}, {node: s-transition-boundary, 
 4. **Prior art gets nodes, not citations.** An imported claim carries a confidence marker and propagates it downward.
 5. **`generated/` is never hand-edited.** Regenerate with `python3 tools/dag.py`.
 6. **Status `stale`** is set on anything downstream of a re-done run. Propagating it automatically is the reason this exists rather than a notebook.
+7. **Component and catalogue-node filenames** use their graph ID (`<id>.md`). Descriptive index documents, including `catalogue/phases.md`, `program/orientation.md`, and `records/*.md`, are exempt.
 
 ## What is deliberately absent
 

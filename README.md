@@ -15,7 +15,7 @@ Separating them also made three things visible that were not:
 ## Layout
 
 - `program/` — why the program exists and what counts as a result. Governs everything below.
-- `components/` — shared engineering and vocabulary. Built once, used by many runs. The split between `instruments-grounded` and `instruments-derived` is structural, not editorial: it is what makes the acyclicity check computable.
+- `components/` — shared engineering and vocabulary. Built once, used by many runs. The split between `c-inst-grounded` and `c-inst-derived` is structural, not editorial: it is what makes the acyclicity check computable.
 - `catalogue/runs/` — configurations. Each declares the components it needs.
 - `catalogue/studies/` — questions. Each declares one primary outcome, the runs it consumes, and the claims it presupposes.
 - `catalogue/prior-art/` — imported claims, each with a confidence marker, so contestation propagates to whatever rests on it.
