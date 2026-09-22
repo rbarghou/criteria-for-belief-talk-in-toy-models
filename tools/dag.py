@@ -30,7 +30,7 @@ def parse(path):
     if "id" in fm: NODES[fm["id"]] = fm
 
 for d, _, fs in os.walk(ROOT):
-    if "/tools" in d or "/generated" in d: continue
+    if "/tools" in d or "/generated" in d or "/history" in d: continue
     for f in fs:
         if f.endswith(".md"): parse(os.path.join(d, f))
 
