@@ -21,7 +21,7 @@ depends_on: [{node: r-phase-b-main, edge: needs}, {node: s-transition-boundary, 
 
 1. **One primary outcome per study.** If a study needs two, it is two studies. This is the rule the whole structure exists to enforce.
 2. **Only `needs` constrains execution.** The other three constrain validity.
-3. **`grounding: grounded`** means the conclusion rests only on probe-free instruments. Claiming it while depending on `c-inst-derived` is an error the tool will show.
+3. **`grounding: grounded`** means the conclusion rests only on probe-free instruments. Claiming it while transitively depending on `c-inst-derived` is an error; the tool reports it and exits unsuccessfully.
 4. **Prior art gets nodes, not citations.** An imported claim carries a confidence marker and propagates it downward.
 5. **`generated/` is never hand-edited.** Regenerate with `python3 tools/dag.py`.
 6. **Status `stale`** is set on anything downstream of a re-done run. Propagating it automatically is the reason this exists rather than a notebook.

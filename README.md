@@ -1,6 +1,6 @@
-# Belief Circuits — repository skeleton
+# Belief Circuits
 
-**Created:** 2026-09-22. Structure only; content migration pending (see `MIGRATION.md`).
+**Created:** 2026-09-22. The frozen protocol, reconciled amendments, program orientation, and questions register have been migrated into the working structure; provenance and remaining gaps are recorded in `MIGRATION.md`.
 
 ## Why it is shaped this way
 
@@ -41,6 +41,6 @@ Edge types, because they fail differently:
 
 Some instruments owe nothing to any fitted decoder: behavioural scoring, ablation effects measured behaviourally, attention patterns read off rather than fitted, and the solver verified by Monte Carlo. Others require a learned decoder: probes, decodability, decoded-belief measures, the residual test.
 
-The risk is circular validation — the tooling validating itself. Making this a graph turns that into a check rather than an assumption: does every path terminate in a node that owes nothing to the instruments under test? `generated/orders.md` answers it per study.
+The risk is circular validation — the tooling validating itself. Making this a graph turns that into a check rather than an assumption: the graph validates that a study marked `grounded` has no transitive dependency on derived instruments, and `generated/orders.md` records the ancestry behind each study.
 
 The honest characterisation is that this is **bootstrapping made explicit**. In phase 1 the grounded base is large, so probes can be calibrated against it and then extended to where grounded measurement is unavailable — a legitimate move, and an inductive one. At later coordinates the grounded base largely vanishes, and the same graph will show most of its roots removed. The four criteria are the proposed answer to that: they check internal consistency rather than agreement with a reference, which is what you do when calibration is no longer available. That is the program's central bet, and it can lose, because coherence is weaker than correctness.
