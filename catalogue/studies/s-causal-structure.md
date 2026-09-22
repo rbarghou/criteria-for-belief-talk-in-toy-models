@@ -4,7 +4,7 @@ type: study
 phase: 1
 status: drafted
 primary_outcome: Whether candidate components are causally load-bearing, whether their effect grows or decays across training, and how expensive they are to rebuild.
-grounding: grounded
+grounding: derived
 depends_on: [{node: r-phase-b-main, edge: needs}, {node: r-phase-c-stakevec, edge: needs}, {node: c-inst-grounded, edge: needs}, {node: s-decodability-timing, edge: presupposes}]
 ---
 
@@ -21,7 +21,7 @@ The full causal-validation battery from `c-inst-grounded`, run on `r-phase-b-mai
 - **Relearning time** — perturbation (zero-and-resume) versus constraint (mask-throughout) distinguished explicitly, control matched on immediate performance drop rather than weight norm, optimizer state fixed at resume, and the recovered network re-examined with the identification machinery rather than trusting recovery speed alone.
 - **The accumulator-versus-arithmetic double dissociation** (`s-counting-vs-retrieval` cross-reference) — the phase-1-available instrument; the stronger rung-1/rung-1′ pair is phase 2.
 
-**Primary outcome, precisely.** Whether candidate components are causally load-bearing (dose-response), whether their effect grows or decays across training (temporal dissociation — growth indicates a genuine belief mechanism, decay indicates a memorization artifact), and how expensive they are to rebuild (relearning time). This is grounded, not derived — none of these measurements require a fitted probe, only the reference solver and behavioural scoring — which is why it depends on `c-inst-grounded` rather than `c-inst-derived` even though it presupposes a derived study (`s-decodability-timing`) to know what to target.
+**Primary outcome, precisely.** Whether candidate components are causally load-bearing (dose-response), whether their effect grows or decays across training (temporal dissociation — growth indicates a genuine belief mechanism, decay indicates a memorization artifact), and how expensive they are to rebuild (relearning time). The measurements are grounded — none requires a fitted probe, only the reference solver and behavioural scoring — but the study's conclusion is **derived** because `s-decodability-timing` selects which structure is a candidate for intervention. The `grounding` field describes the full evidential chain, not merely the final measurement.
 
 **Caveat to carry through every result here.** Mean-ablation substitutes a population average, not an absence; downstream layers may receive a state the network never produces on any real forward pass. A positive dose-response or temporal-dissociation result is consistent with distant dysfunction, a conduit role, or a degenerate alternate route producing the same function — the lesion tradition's inherited hazards, not resolved by this design, only guarded against by triangulating across the three instruments rather than reporting any one alone.
 

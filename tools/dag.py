@@ -64,6 +64,18 @@ def roots_of(nid, seen=None):
     for dep, _ in deps: out |= roots_of(dep, seen)
     return out
 
+def ancestors_of(nid, seen=None):
+    """All transitive dependencies of a node, regardless of edge type."""
+    seen = seen or set()
+    if nid in seen or nid not in NODES: return set()
+    seen.add(nid)
+    out = set()
+    for dep, _ in NODES[nid]["depends_on"]:
+        if dep in NODES:
+            out.add(dep)
+            out |= ancestors_of(dep, seen)
+    return out
+
 out = ["# Generated orders and grounding report",
        "", "*Regenerate with `python3 tools/dag.py`. Do not edit by hand.*", ""]
 
@@ -82,11 +94,19 @@ for title, filt, note in [
         out += ["*No cycle.*", ""]
 
 out += ["## Grounding report", "",
-        "For each study: whether its conclusion rests only on probe-free instruments, and which terminal ancestors it depends on. A study whose roots all lie outside the derived instruments is self-supporting; one that does not is leaning on a calibration.", ""]
-out += ["| Study | Grounding | Terminal ancestors |", "|---|---|---|"]
+        "For each study: its declared grounding, whether a derived instrument appears anywhere in its transitive ancestry, and its terminal ancestors. The ancestry scan, not the terminal-root list, checks the grounding rule.", ""]
+out += ["| Study | Grounding | Derived-instrument ancestry | Terminal ancestors |", "|---|---|---|---|"]
+grounding_errors = []
 for nid in sorted(n for n in NODES if NODES[n].get("type") == "study"):
     r = sorted(roots_of(nid) - {nid})
-    out.append(f"| `{nid}` | {NODES[nid].get('grounding','?')} | " + ", ".join(f"`{x}`" for x in r) + " |")
+    derived = "c-inst-derived" in ancestors_of(nid)
+    grounding = NODES[nid].get("grounding", "?")
+    out.append(f"| `{nid}` | {grounding} | {'yes' if derived else 'no'} | " + ", ".join(f"`{x}`" for x in r) + " |")
+    if grounding == "grounded" and derived:
+        grounding_errors.append(nid)
+
+if grounding_errors:
+    out += ["", "**GROUNDING ERROR** — studies marked `grounded` with derived-instrument ancestry: " + ", ".join(f"`{n}`" for n in grounding_errors)]
 
 out += ["", "## Imported claims and their dependents", "",
         "Contested prior art propagates to everything below it.", ""]
@@ -97,3 +117,5 @@ for nid in sorted(n for n in NODES if NODES[n].get("type") == "prior-art"):
 
 open(os.path.join(ROOT, "generated", "orders.md"), "w").write("\n".join(out) + "\n")
 print(f"{len(NODES)} nodes; wrote generated/orders.md")
+if grounding_errors:
+    sys.exit(1)

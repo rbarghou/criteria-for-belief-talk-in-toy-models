@@ -44,24 +44,24 @@ What can be claimed when. All edge types. A study may execute early and remain u
 
 ## Grounding report
 
-For each study: whether its conclusion rests only on probe-free instruments, and which terminal ancestors it depends on. A study whose roots all lie outside the derived instruments is self-supporting; one that does not is leaning on a calibration.
+For each study: its declared grounding, whether a derived instrument appears anywhere in its transitive ancestry, and its terminal ancestors. The ancestry scan, not the terminal-root list, checks the grounding rule.
 
-| Study | Grounding | Terminal ancestors |
-|---|---|---|
-| `s-belief-persistence` | derived | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
-| `s-causal-structure` | grounded | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
-| `s-counting-vs-retrieval` | grounded | `c-terminology` |
-| `s-crit-multiconsumer` | derived | `c-terminology`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
-| `s-crit-offmanifold` | derived | `c-terminology` |
-| `s-crit-pathindependence` | derived | `c-terminology` |
-| `s-crit-residual` | derived | `c-terminology` |
-| `s-decodability-timing` | derived | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
-| `s-payoff-alone` | derived | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
-| `s-rationalizability` | grounded | `c-terminology` |
-| `s-representation-vs-demand` | derived | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
-| `s-tooling-validation` | derived | `c-terminology`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
-| `s-transition-boundary` | grounded | `c-terminology`, `p-diversity-boundary` |
-| `s-uniqueness` | derived | `c-terminology`, `p-algorithm-multiplicity`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
+| Study | Grounding | Derived-instrument ancestry | Terminal ancestors |
+|---|---|---|---|
+| `s-belief-persistence` | derived | yes | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
+| `s-causal-structure` | derived | yes | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
+| `s-counting-vs-retrieval` | grounded | no | `c-terminology` |
+| `s-crit-multiconsumer` | derived | yes | `c-terminology`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
+| `s-crit-offmanifold` | derived | yes | `c-terminology` |
+| `s-crit-pathindependence` | derived | yes | `c-terminology` |
+| `s-crit-residual` | derived | yes | `c-terminology` |
+| `s-decodability-timing` | derived | yes | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
+| `s-payoff-alone` | derived | yes | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
+| `s-rationalizability` | grounded | no | `c-terminology` |
+| `s-representation-vs-demand` | derived | yes | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
+| `s-tooling-validation` | derived | yes | `c-terminology`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
+| `s-transition-boundary` | grounded | no | `c-terminology`, `p-diversity-boundary` |
+| `s-uniqueness` | derived | yes | `c-terminology`, `p-algorithm-multiplicity`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
 
 ## Imported claims and their dependents
 
