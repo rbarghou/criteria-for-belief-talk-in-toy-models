@@ -49,7 +49,7 @@ For each study: whether its conclusion rests only on probe-free instruments, and
 | Study | Grounding | Terminal ancestors |
 |---|---|---|
 | `s-belief-persistence` | derived | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
-| `s-causal-structure` | grounded | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
+| `s-causal-structure` | derived | `c-terminology`, `p-compositional-data`, `p-diversity-boundary`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
 | `s-counting-vs-retrieval` | grounded | `c-terminology` |
 | `s-crit-multiconsumer` | derived | `c-terminology`, `p-modular-arithmetic-circuit`, `p-statistical-induction-heads` |
 | `s-crit-offmanifold` | derived | `c-terminology` |
