@@ -1,0 +1,21 @@
+%% Calibration and interpretability spine
+flowchart TB
+
+diversity["Diversity<br/>sweep"]
+grounded["Probe-free<br/>instruments"]
+boundary["Diversity-boundary<br/>prior art"]
+transition["Behavioral<br/>transition"]
+prediction["Prediction<br/>run"]
+derived["Probe-based<br/>instruments"]
+composition["Compositional-data<br/>prior art"]
+tooling["Tooling<br/>validation"]
+decoding["Decodability<br/>over training"]
+
+diversity -->|needs| transition
+grounded -->|needs| transition
+boundary -->|calibrates| transition
+transition -->|presupposes| decoding
+prediction -->|needs| decoding
+derived -->|needs| decoding
+composition -->|needs| decoding
+tooling -->|enables| decoding

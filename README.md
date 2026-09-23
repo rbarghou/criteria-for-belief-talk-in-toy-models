@@ -47,4 +47,4 @@ The honest characterisation is that this is **bootstrapping made explicit**. In 
 
 ## DAGs
 
-`tools/dag.py` also generates [Mermaid DAGs](generated/mermaid/index.md) for GitHub rendering: an overview, execution order, validity dependencies, and grounding ancestry.
+`tools/dag.py` also generates [curated Mermaid DAGs](generated/mermaid/index.md): small, purpose-specific views of the program rather than one unreadable full graph. The index links to a Markdown page with fenced Mermaid blocks for VS Code preview.

@@ -1,0 +1,24 @@
+%% Shared foundation and run production
+flowchart LR
+
+terminology["Shared<br/>terminology"]
+substrate["Game and data<br/>substrate"]
+solver["Reference<br/>solver"]
+grounded["Probe-free<br/>instruments"]
+derived["Probe-based<br/>instruments"]
+training["Training<br/>framework"]
+verification["Solver<br/>verification"]
+prediction["Prediction<br/>run"]
+policy["Policy-gradient<br/>run family"]
+support["Supporting<br/>run family"]
+
+terminology -->|needs| substrate
+substrate -->|needs| solver
+solver -->|needs| grounded
+grounded -->|calibrates| derived
+substrate -->|needs| training
+solver -->|needs| training
+solver -->|needs| verification
+training -->|needs| prediction
+training -->|needs| policy
+training -->|needs| support
