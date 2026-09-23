@@ -1,0 +1,7 @@
+%% Research-program DAG overview
+flowchart LR
+prior["Prior art (8)"] -->|calibrates| studies["Studies (14)"]
+components["Components (6)"] -->|needs| runs["Runs (12)"]
+components -->|needs / enables| studies
+runs -->|needs| studies
+studies -->|presupposes / enables| studies

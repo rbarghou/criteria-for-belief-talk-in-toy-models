@@ -22,7 +22,7 @@ Separating them also made three things visible that were not:
 - `catalogue/phases.md` — which studies belong to which pass. Phase membership is a field on each study; this is the readable view.
 - `records/` — decisions, questions, and the frozen amendment history.
 - `generated/` — computed, never hand-edited.
-- `tools/dag.py` — regenerates `generated/orders.md`.
+- `tools/dag.py` — regenerates `generated/orders.md` and `generated/mermaid/`.
 
 ## The three graphs
 
@@ -44,3 +44,7 @@ Some instruments owe nothing to any fitted decoder: behavioural scoring, ablatio
 The risk is circular validation — the tooling validating itself. Making this a graph turns that into a check rather than an assumption: the graph validates that a study marked `grounded` has no transitive dependency on derived instruments, and `generated/orders.md` records the ancestry behind each study.
 
 The honest characterisation is that this is **bootstrapping made explicit**. In phase 1 the grounded base is large, so probes can be calibrated against it and then extended to where grounded measurement is unavailable — a legitimate move, and an inductive one. At later coordinates the grounded base largely vanishes, and the same graph will show most of its roots removed. The four criteria are the proposed answer to that: they check internal consistency rather than agreement with a reference, which is what you do when calibration is no longer available. That is the program's central bet, and it can lose, because coherence is weaker than correctness.
+
+## DAGs
+
+`tools/dag.py` also generates [Mermaid DAGs](generated/mermaid/index.md) for GitHub rendering: an overview, execution order, validity dependencies, and grounding ancestry.
