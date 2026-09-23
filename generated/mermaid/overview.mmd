@@ -1,0 +1,13 @@
+%% Research-program overview
+flowchart LR
+
+prior["Prior-art<br/>claims"]
+components["Shared<br/>components"]
+runs["Training<br/>runs"]
+studies["Pre-registered<br/>studies"]
+
+prior -->|calibrates| studies
+components -->|needs| runs
+components -->|needs / enables| studies
+runs -->|needs| studies
+studies -->|presupposes / enables| studies

@@ -1,0 +1,16 @@
+%% Grounded causal evidence
+flowchart LR
+
+prediction["Prediction-run<br/>checkpoints"]
+stake["Stake-vector<br/>checkpoints"]
+grounded["Probe-free<br/>instruments"]
+decoding["Decodability<br/>timing"]
+causal["Causal<br/>structure"]
+counting["Counting versus<br/>retrieval"]
+
+prediction -->|needs| causal
+stake -->|needs| causal
+grounded -->|needs| causal
+decoding -->|selects target| causal
+prediction -->|needs| counting
+grounded -->|needs| counting

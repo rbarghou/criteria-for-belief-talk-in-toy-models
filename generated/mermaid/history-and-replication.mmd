@@ -1,0 +1,20 @@
+%% Training history and replication
+flowchart LR
+
+prediction["Prediction<br/>run"]
+curriculum["Curriculum<br/>run"]
+decoding["Decodability<br/>timing"]
+persistence["Belief<br/>persistence"]
+seeds["Seed-replication<br/>run"]
+derived["Probe-based<br/>instruments"]
+tooling["Tooling<br/>validation"]
+multiplicity["Algorithm-multiplicity<br/>prior art"]
+uniqueness["Circuit<br/>uniqueness · stub"]
+
+prediction -->|needs| persistence
+curriculum -->|needs| persistence
+decoding -->|calibrates| persistence
+seeds -->|needs| uniqueness
+derived -->|needs| uniqueness
+tooling -->|enables| uniqueness
+multiplicity -->|calibrates| uniqueness

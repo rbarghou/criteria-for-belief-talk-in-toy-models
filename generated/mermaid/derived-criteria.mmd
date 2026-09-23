@@ -1,0 +1,15 @@
+%% Derived criterion suite
+flowchart LR
+
+checkpoints["Phase-1 checkpoint corpus:<br/>prediction and stake-vector runs"]
+derived["Probe-based<br/>instruments"]
+criteria["Three derived criteria:<br/>off-manifold coherence<br/>path independence<br/>residual following"]
+multirun["Multi-consumer<br/>run · stub"]
+tooling["Tooling<br/>validation"]
+multi["Multi-consumer<br/>criterion · stub"]
+
+checkpoints -->|needs| criteria
+derived -->|needs| criteria
+multirun -->|needs| multi
+derived -->|needs| multi
+tooling -->|enables| multi

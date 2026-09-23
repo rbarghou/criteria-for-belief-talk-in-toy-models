@@ -1,0 +1,18 @@
+%% Action-channel comparisons
+flowchart LR
+
+outputs["Policy-output runs:<br/>action-only and auxiliary"]
+decoding["Decodability<br/>timing"]
+payoff["Payoff-only<br/>comparison"]
+channels["Action-channel comparison:<br/>action-only, single stake,<br/>stake vector"]
+demand["Representation versus<br/>behavioral demand"]
+behavior["Action-behavior runs:<br/>action-only and stake vector"]
+grounded["Probe-free<br/>instruments"]
+rational["Belief<br/>rationalizability"]
+
+outputs -->|needs| payoff
+decoding -->|calibrates| payoff
+channels -->|needs| demand
+decoding -->|enables| demand
+behavior -->|needs| rational
+grounded -->|needs| rational
