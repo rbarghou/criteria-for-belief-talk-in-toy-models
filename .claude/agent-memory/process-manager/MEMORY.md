@@ -23,6 +23,103 @@ paragraph at the bottom rather than trimming them silently.
 
 ## Log
 
+### 2026-09-24 — Verified the Lab Manager entry against source; corrected one inaccuracy
+Follow-up to the entry directly below, whose author lacked git/GitHub
+access and flagged the "Standing proposal" paragraph as unverified. This
+session had that access: fetched
+`origin/claude/lab-manager-repo-orientation-siv329` and read
+`lab/proposals/2026-09-24-organization.md` directly.
+
+**Confirmed accurate:** the proposal's location, unmerged status, and the
+substance of the Lab Manager description (build-vs-run, execution,
+credentials/cost-consciousness leaning on provider controls, tooling
+inventory, engineering-manager function) all match §0, §5–6 of the actual
+proposal. The "Standing proposal, not yet settled" paragraph needed no
+correction.
+
+**Found inaccurate:** the "New standing roles" paragraph, which claimed
+Lab Manager "routes proposals for new standing roles through Process
+Manager rather than taking them to Ramsey directly." The proposal's §5.6
+and §10.e say the opposite — a new standing agent "goes to Ramsey as a
+proposal," addressed to Ramsey directly, with no mention of Process
+Manager as an intermediary anywhere in the document. This wasn't a new
+error from the prior entry: it traces back to `.claude/agents/
+process-manager.md`'s own description and "What you own" section (from
+PR #4), which made the same unsupported claim, attributed to "Lab
+Manager's proposal," before this role ever read that proposal directly.
+The prior entry's author trusted that pre-existing claim as "already-
+merged, verified" — reasonably, since it was merged — but "merged" isn't
+the same as "checked against its cited source," which is exactly the
+gap this role exists to catch in other roles' self-descriptions and
+missed in its own agent spec.
+
+**What I changed:** reworded `process/roles.md`'s "New standing roles"
+paragraph and both spots in `.claude/agents/process-manager.md` (the
+`description` frontmatter's invocation trigger, and "What you own") to
+say accurately that a new standing agent goes to Ramsey directly per
+Lab Manager's proposal, and that Process Manager's part is writing the
+resulting role's entry into `process/roles.md` after Ramsey decides —
+not reviewing the proposal before Ramsey sees it. Treated this as an
+accuracy correction against a now-verified source, not a scope change:
+narrows an unsupported claim to Process Manager's own authority, which
+the existing self-scope rule already exempts from sign-off.
+
+### 2026-09-24 — Added Lab Manager entry to `process/roles.md`
+Follow-up to the queued item from the scaffolding entry below ("each gets
+its own follow-up PR, Lab Manager first"). Before drafting, tried to
+verify Lab Manager's standing organization proposal
+(`lab/proposals/2026-09-24-organization.md`, reportedly on branch
+`claude/lab-manager-repo-orientation-siv329`, unmerged as of PR #4's
+description) against its actual current state, per "First, every time."
+**Could not.** This session's tools are Read/Glob/Grep/Write/Edit only —
+no Bash, no git, no GitHub MCP access — and the working tree is checked
+out on `main`, where `lab/` doesn't exist and that branch was never
+fetched (confirmed via `.git/refs` and `.git/logs/HEAD`: only this
+role's own past branches are present locally). No other checkout of the
+repo exists on the machine either. So the proposal's text was not
+independently readable this session, contrary to the "don't take a
+role's self-description at face value" instruction — I could not check
+it against the source at all, only against what's already merged into
+this repo.
+
+What I used instead: (1) the already-merged cross-references to Lab
+Manager inside `process/roles.md`'s own status note and
+`.claude/agents/process-manager.md` (routes new-standing-role proposals
+through Process Manager before Ramsey; "engineering and execution";
+`lab/` holds its organization proposal on a branch) — these are verified
+against this repo's actual current state, not secondhand; and (2) the
+paraphrase of the proposal's contents that the calling agent supplied
+(build-vs-run distinction, credentials/cost-consciousness, tooling
+inventory, engineering-manager function), which I used for texture but
+flagged inline in the new entry as unverified secondhand paraphrase, not
+a reading of the source.
+
+**What I wrote:** a `## Lab Manager` entry in `process/roles.md` matching
+the Process Manager entry's format — role description, then bolded
+subsections for "Standing proposal, not yet settled" (states the
+proposal's claimed location, that it's unmerged, that Process Manager
+treats it as a draft pending Ramsey per the same logic already applied
+to itself, and an explicit flag that this session couldn't open it
+directly), "New standing roles" (routing through Process Manager, cross-
+referenced against Process Manager's own entry), and "Boundary with
+Process Manager" (executional vs. definitional, and that Process
+Manager's entry settles cross-role disputes subject to Ramsey). Also
+updated the file's "Status" note at the top to drop "Lab Manager is
+next" now that it's defined, without naming which role is next (not this
+session's call).
+
+**Open / flagged, not settled:** the "Standing proposal" paragraph is
+explicitly hedged as unverified against source — next session (or
+whoever has git/GitHub access) should actually open
+`lab/proposals/2026-09-24-organization.md` on its branch, confirm it
+still exists at that path with that content, and correct this entry if
+it's drifted. This doesn't need Ramsey's sign-off to have been written
+(it's a new role entry, not an expansion of Process Manager's own scope,
+per the task's own framing), but the verification gap means it should be
+treated as lower-confidence than the Process Manager entry until someone
+checks the source. Not committed or pushed — left in the working tree
+per instruction.
+
 ### 2026-09-24 — Fixes for gap-analysis findings #1, #3, #5, #8 (plus partial #2, #7)
 Follow-up to an earlier gap analysis of `process/roles.md` and
 `.claude/agents/process-manager.md` (that analysis itself isn't logged

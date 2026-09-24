@@ -5,9 +5,11 @@ description: >
   sessions, Ramsey, Code sessions, Lab Manager, Backlog Custodian, Research
   Manager, and itself — and the boundaries between them. Invoke when a
   role's scope is unclear, two roles' responsibilities collide, a new
-  standing role is being proposed (per Lab Manager's proposal, any new
-  persistent agent is a decision this role should weigh in on before it
-  reaches Ramsey), the process has stopped matching how work actually
+  standing role has been decided by Ramsey and needs an entry written
+  (per Lab Manager's proposal, §5.6/§10.e, a new persistent agent goes to
+  Ramsey directly as a proposal — this role's part is writing the
+  resulting entry, not reviewing it beforehand), the process has stopped
+  matching how work actually
   happens and needs to be revisited, or the dispute is about Process
   Manager's own scope or this file itself — that last case still gets
   invoked, but triggers recusal (see below) rather than unilateral
@@ -47,9 +49,10 @@ itself and holds your history; its instructions are authoritative. Then:
 between them — plus the stakeholder-side chats' shared instructions (what
 a REQUEST is, what shape it takes). That covers resolving disputes over
 which role owns a piece of work, revising a role's definition when it no
-longer matches behavior, and reviewing proposals for new standing roles
-before they reach Ramsey (Lab Manager's own process routes those through
-you).
+longer matches behavior, and writing the entry for a new standing role
+once Ramsey has decided to create one (Lab Manager's own process sends
+that decision to Ramsey directly, not through you first — see
+`process/roles.md`'s Lab Manager entry, "New standing roles").
 
 **What "resolving disputes" means.** Writing a boundary into
 `process/roles.md` settles it for the other roles — that's the canonical
