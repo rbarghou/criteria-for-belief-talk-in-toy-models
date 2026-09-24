@@ -4,6 +4,8 @@
 
 **Readers.** Ramsey (all). Process Manager (§1–3, §5, §9–10). Backlog Custodian (§3.4). Research Manager (§4.4, §8, Appendix B).
 
+**Revision 2 (same day).** §5 is rewritten. It now covers how the codebase itself is managed (architecture, interfaces, testing, keeping `main` healthy) and how coding agents are briefed, supervised, reviewed, and learned from. Summary item 8, §2, §8, §10 and Appendix A are updated to match, and Appendix C (the work-order template) is new.
+
 ---
 
 ## 0. Summary
@@ -19,6 +21,13 @@ The moves, in one screen:
 5. **Authority is cited, not assumed.** Any change in meaning to `program/`, `components/`, `catalogue/`, or `records/` cites a request or a dated relayed decision. That is how a research-side decision becomes a repo edit without me becoming its uncredited author.
 6. **The repository is the Lab Manager's memory.** This chat is lossy: context gets compacted and the container gets reclaimed. So my operating rules, cost policy, and record of environments live in `lab/`. `CLAUDE.md` carries the rules every coding session must follow, because it is the one file every session reads automatically.
 7. **Infrastructure is decided by the first request that needs it.** Each deferred decision has a named trigger and a current lean. Only one is decided now: code goes in a single installable package, not loose scripts. Reversing that later costs the most, because every delegated session would otherwise invent its own layout.
+
+8. **I maintain the code; agents contribute to it under a written contract.**
+   - Modules mirror the graph's components, and imports may only follow its `needs` edges. The grounding firewall becomes a CI check.
+   - Public interfaces between modules are mine to change. That is what lets agents work in parallel safely.
+   - For delegated work I write the acceptance tests first. The agent makes them pass without editing them.
+   - I verify every PR myself — contract, full test run, adversarial read — before it reaches `main`.
+   - Lessons from each delegation are written back into the rules.
 
 The overhead per request is: I write one file, mostly pasted text plus criteria. A status line changes as work proceeds. A delivery section is filled in at the end. The Custodian reads one page. That is all of it.
 
@@ -58,13 +67,12 @@ generated/                 existing; gains requests.md (the Custodian's page) an
 .github/workflows/         NEW  CI: regenerate and fail on any difference or error; run tests once code exists
 
 created by the first request that needs them, not before:
-pyproject.toml  src/belief_circuits/  tests/     with the first code request (the solver, Appendix B)
+pyproject.toml  uv.lock  src/belief_circuits/  tests/     with the first code request (the solver, Appendix B)
+configs/                                         with the first run configuration
 jobs/                                            with the first execution whose output is claimed as a result
 ```
 
-Code layout, when it arrives, mirrors the component nodes: `substrate/`, `solvers/`, `training/`, `instruments/grounded/`, `instruments/derived/`. Each module names its node ID in its docstring.
-
-The graph's grounding firewall then gets a counterpart in code: a test fails if anything under `instruments/grounded/` imports from `instruments/derived/`. It costs almost nothing and makes the program's central methodological worry — circular validation — something the build can catch.
+The code layout, its import rules, and how it is kept healthy are covered in §5, Part A.
 
 ---
 
@@ -190,33 +198,201 @@ Whether a node is ready for engineering is then not a node field at all. It is r
 
 ---
 
-## 5. Delegation and concurrency
+## 5. The codebase and the coding agents that work on it
 
-**What I do directly:**
+I am the codebase's **maintainer**. Coding agents are **contributors**. I am accountable for three things:
 
-- anything touching epistemic content;
-- tooling and process changes;
-- small builds;
-- all execution of results.
+- `main` is always green and always trustworthy;
+- the architecture stays coherent as agents add to it;
+- no agent's work reaches `main` without my having verified it myself.
 
-**What I delegate:** self-contained builds with test-checkable criteria and a bounded file scope. Candidate examples B (data pipeline) and C (training scaffold) are the likely first cases. Ramsey can override either way on any request.
+The first half of this section is how the code is kept in shape. The second half is how I work with the agents who write most of it.
 
-**The work order lives in the request file,** not in a chat prompt. A delegated session's entire starting prompt is:
+### Part A — Managing the codebase
 
-> "Read `CLAUDE.md`, then the Work order in `requests/req-NNNN-*.md`; deliver as a PR to `main`."
+#### 5.1 Architecture: modules follow components, and imports follow the graph
 
-So the delegation is visible to the Custodian, is identical however the session gets started (by me through the session tools, or by Ramsey by hand), and survives the chat that launched it.
+```
+src/belief_circuits/
+  substrate/      c-substrate   game rules, opponent sampling, pools, episodes, tokenization
+  solvers/        c-solvers     posterior, predictive, scalars, reference ladder
+  training/       c-training    model, objectives for each phase, loop, checkpointing, seeding
+  instruments/
+    grounded/     c-inst-grounded   behavioural scoring, ablations, attention read-offs
+    derived/      c-inst-derived    probes, decodability, the four criteria
+  jobs/           entry points: thin command-line wrappers that read a config, call the library, and write outputs
+tests/            mirrors src/; acceptance tests live in tests/acceptance/<req-id>/
+configs/          one file per run configuration, named after its run node (configs/r-phase-b-main/...)
+```
 
-**The concurrency model is P3 made concrete:**
+The rules for this layout:
+
+- **Imports only go in the direction the graph's `needs` edges point.** `substrate` imports nothing from the project. `solvers` may import `substrate`. `training` may import both. `instruments/derived` may import `instruments/grounded`, never the reverse. Nothing imports from `jobs/`.
+- **A single test checks every import direction.** A cycle, or a grounded module reaching into derived, fails CI. This is the grounding firewall enforced in code.
+- **The library is pure; side effects live at the edges.** Library functions take their inputs explicitly: random-number generators are passed in, and nothing uses a global seed or reads files or environment variables. Only `jobs/` touches disk, the network, or config files.
+  - This keeps nearly everything testable on CPU in milliseconds.
+  - It makes determinism checkable.
+  - It means a job's recorded config really is its complete input.
+- **A run node in the graph maps to a config directory, not to code.** Runs are configurations of the library (README: "a run is a configuration"). A new run should almost never need new library code. When it does, that fact is visible in the request.
+
+#### 5.2 Interfaces between modules are owned and explicit
+
+- The functions and data types one module exposes to another form its **public interface**. Each module's `__init__.py` names them, with type annotations.
+  - Examples: `Episode`, `Pool`, `posterior_predictive`, `best_response`, `Model`, `Checkpoint`.
+  - Everything else in the module is private and free to change.
+- **Public interfaces are the Lab Manager's to change.** An agent may change a module's internals freely within its work order. If its task needs a public interface to change, it stops and proposes the change in its pull request (PR); it does not make the change.
+  - This is the single rule that makes parallel agents safe.
+  - Two agents can work in `substrate` and `training` at once because the seam between them is frozen while they work.
+- **Interfaces are frozen by tests.** Each public interface has contract tests (types, shapes, invariants such as "tokenized episodes never expose round t's opponent action at round t's decision position"). Changing an interface means changing its contract test, which only I do, in its own PR, with a list of affected code.
+- **An interface can be assumed before it exists.** When work is built against an interface that doesn't exist yet (candidate example C against B's episodes), I write the interface first, as types and a contract test with a stub. Both agents then build to that, and the assumption is checked by a test instead of being trusted.
+
+#### 5.3 Testing: tiers, determinism, and acceptance tests as the contract
+
+| Tier | What | When | Budget |
+|---|---|---|---|
+| Unit and contract | Every public function; every interface invariant | Every push, CI | Under 1 minute total |
+| Exhaustive and property checks | Numerical code checked against brute force or known identities (the solver's exhaustive checks, Appendix B) | Every push, CI | Under 2 minutes |
+| Smoke | Each job's entry point runs end to end on a tiny config: a few steps of training, a tiny pool, one checkpoint written and reloaded | Every push, CI | Under 3 minutes, CPU |
+| Validation | Real-scale runs whose output is a result | Only as jobs (§4), by the Lab Manager | By cost envelope |
+
+- **Determinism is tested, not hoped for.** For each job type, a test runs the same config and seed twice and checks the outputs are byte-identical on CPU.
+  - GPU nondeterminism is recorded in job records where it occurs, never silently absorbed.
+  - Without determinism, "the same run" can't be reproduced, and the program's claims about training history (`program/orientation.md` §6.7) can't be tested.
+- **Acceptance tests are written before the work, by me, and are the contract.** For every `build` request with a delegated agent, the work order points at `tests/acceptance/<req-id>/`. I write those tests, and they fail, before the agent starts.
+  - The agent's job is to make them pass without editing them.
+  - CI flags any diff to an acceptance test that I didn't author.
+  - This is P4 (criteria before work) applied to code. It is also the most effective single guard against the main failure mode of coding agents: redefining "done" to match what they built.
+- **Every acceptance criterion in a request maps to a named test**, and the delivery section lists them. A criterion that can't be written as a test (rare, and mostly about results) is marked as checked by review, and I say how I checked it.
+
+#### 5.4 Keeping `main` healthy
+
+- **Always green.** Nothing merges with CI red. If `main` breaks anyway (a dependency release, an environment change), fixing it outranks all other work.
+- **Minimal quality gates in CI:**
+  - `ruff` for lint and formatting (one tool, no configuration debates);
+  - the test tiers above;
+  - `tools/dag.py` validation;
+  - the import-direction test.
+  - No type checker at first; annotations on public interfaces are required, and I'll add a checker if interface bugs start slipping through review.
+- **Dependencies are locked and deliberate.** `uv.lock` is committed. Adding a dependency is a one-line entry in `lab/decisions.md` saying why. Agents may not add dependencies; they ask in the PR.
+- **Small PRs, one purpose each.** Refactoring is never mixed into feature work: a refactor is its own PR with no change in behaviour, shown by unchanged tests.
+- **The commit is the version.** There are no releases. When a job produces a reported result, its commit is tagged `result/<req-id>`, so the exact code behind any claim stays one click away even after `main` moves on.
+- **Maintenance passes.** After every ~5 merged code requests, or before any phase's first paid training run, I do one pass: dead code, duplicated helpers, interfaces that have grown awkward, slow tests. It's recorded as a `source: lab-manager` request so it's visible. This is how architecture debt from many small agent contributions gets paid down on purpose instead of accumulating.
+- **Documentation stays where readers already look.**
+  - Each module's docstring names its node and its public interface.
+  - The graph's component nodes remain the design documentation.
+  - There's no separate docs tree. The node explains *why*, the code *how*, the request *what was asked and delivered*.
+
+### Part B — Working with coding agents
+
+#### 5.5 Which kind of agent, for which work
+
+| Work | Who | Why |
+|---|---|---|
+| Epistemic content edits, interface changes, tooling, all result executions, reviews and merges | Lab Manager, directly | Needs authority, continuity, or paid credentials |
+| Small, bounded code tasks (under ~an hour, one module) | A subagent inside my session, in an isolated git worktree | Cheapest to brief and verify; returns in-session; no separate environment |
+| Substantial builds (a component, a pipeline, a scaffold) | A separate Claude Code cloud session, launched by me with the session tools (or by Ramsey by hand) | Runs in parallel for hours without consuming my context; has its own branch and PR |
+
+**Concurrency:** I start with **at most two cloud agents at once**, raising the cap only once the review loop below is shown not to be the bottleneck. More agents than I can review adds risk, not speed.
+
+#### 5.6 The work order: what an agent receives
+
+The work order is a section of the request file (template: Appendix C). It is written so an agent that has read only `CLAUDE.md` and this one section can do the job. It contains:
+
+1. **Goal.** One paragraph, in engineering terms, with a link to the graph node for context.
+2. **Scope.** The exact paths the agent may create or modify. Everything else is read-only to it. CI on its PR flags any file changed outside scope.
+3. **Interfaces.** The public interfaces it must *use* (frozen) and must *provide* (with their contract tests already in place).
+4. **Acceptance tests.** The path to the failing tests it must make pass.
+5. **Constraints.** Dependencies allowed, CPU-only, runtime budgets for tests, no paid compute.
+6. **Out of scope.** What *not* to do, especially tempting adjacent work.
+7. **Stop-and-ask conditions.** The agent stops, opens a draft PR, and writes its question there — it does not guess — if:
+   - an acceptance test looks wrong;
+   - it needs a public interface change or a new dependency;
+   - a choice would change a research meaning (a threshold, a definition, a grid, a tie-breaking rule);
+   - it's about to exceed scope.
+   The rule is that research meaning is never decided by an agent.
+8. **Definition of done.** All acceptance tests and CI pass, and a PR with the required description is open.
+
+The launching prompt stays one line pointing at the work order. So the brief is versioned, visible to the Custodian, and identical no matter who starts the session.
+
+#### 5.7 Launch, supervision, and questions in flight
+
+1. **Prepare.**
+   - I merge the acceptance tests and any interface stubs to `main` first.
+   - I create the branch `req-NNNN-<slug>` from that commit.
+   - The environment is ready from the first command: a session-start hook installs dependencies, so an agent never improvises its setup.
+2. **Launch.** I start the session on that branch with the one-line prompt, and log the session link and branch in the request's Log.
+3. **Supervise by events, not by polling.** I subscribe to the agent's PR. When it opens a draft with a question, pushes, or CI fails, I'm notified.
+   - Engineering questions (inside my authority) I answer on the PR, so the answer lives with the code.
+   - Questions about research meaning go to Ramsey as a relay. The request goes to `blocked` until the answer comes back. The agent's session is paused or closed; it is not left guessing.
+4. **Stalls.** If an agent produces nothing reviewable within its expected time, or the same CI failure survives two attempts, I stop it and take one of two routes:
+   - **Re-scope:** the work order was wrong or too big; split it.
+   - **Take over:** finish it myself from its branch.
+   Either way the Log records what happened, because repeated stalls on one kind of task are a signal about how I write work orders.
+
+#### 5.8 Review: verify, never trust the summary
+
+The agent's PR description is a claim, not evidence. Before merging, I:
+
+1. **Check the contract held:**
+   - acceptance tests are byte-identical to what I wrote;
+   - no file outside scope changed;
+   - no dependency was added;
+   - no public interface changed without an approved proposal.
+2. **Run everything myself**, on a fresh checkout of the PR branch, not relying on the agent's report or even only on CI. That includes the determinism test and each smoke test.
+3. **Read the whole diff adversarially,** looking specifically for the failure modes coding agents actually have:
+   - tests weakened or special-cased to pass;
+   - errors swallowed;
+   - silent fallbacks;
+   - hard-coded values standing in for computation;
+   - code that's more general than asked;
+   - duplicated helpers that already exist elsewhere;
+   - comments claiming behaviour the code doesn't have.
+   I also use the code-review tooling as a second pass. It is not a substitute for my read.
+4. **Check the research-meaning guard:** any constant, threshold or default in the diff that carries meaning must trace to the request, a node, or a relayed decision. An agent-invented one is a review failure even if every test passes.
+
+**Outcomes:**
+
+- **Merge.** Squash into one commit whose message cites the request. Then regenerate, set the request to `delivered` (for a `build`) or proceed to execution (for a results request), and close the session.
+- **Rework.** Line comments on the PR. The same agent session resumes if it's still alive; otherwise a fresh one gets the branch plus the review comments as its brief.
+  - **Two rework rounds maximum.** After that I re-scope or take over. A third round means the work order was the problem.
+- **Reject.** The branch is closed with the reason logged. This is rare, and usually means the scope was wrong.
+
+#### 5.9 Parallel agents without collisions
+
+Parallel work is safe when four conditions hold together:
+
+- work orders have **disjoint write scopes**;
+- the seams between them are **frozen public interfaces** with contract tests;
+- **shared files** (`pyproject.toml`, `uv.lock`, `CLAUDE.md`, `configs/` conventions, anything under `tests/acceptance/`) are Lab Manager–only;
+- `generated/` is **never merged by hand**, only regenerated.
+
+When two PRs are both ready, I merge them one at a time, re-running CI on the second after the first lands.
+
+**The concurrency table (P3 made concrete):**
 
 | State | Writer | How conflicts resolve |
 |---|---|---|
-| Request files, node content, node status | Lab Manager only | None arise |
-| Code | Any session, on its own branch, within its work order's scope | At PR merge, by the Lab Manager |
-| `generated/` | The tool only | Regenerate; never merge by hand. CI fails if `generated/` doesn't match the source files |
-| `jobs/` | Lab Manager only | None arise |
+| Request files, node content, node status, `jobs/` | Lab Manager only | None arise |
+| Public interfaces, contract and acceptance tests, shared config files | Lab Manager only | None arise; agents propose changes in PRs |
+| Module internals, new tests | Agents, within their work order's scope | Disjoint scopes; at merge, by the Lab Manager |
+| `generated/` | The tool only | Regenerate; CI fails on any difference |
 
-Before I merge a delegated PR, I read the whole diff against the request's criteria rather than trusting the PR description.
+#### 5.10 Closing the loop: what agents teach the process
+
+Every delegated request ends with a two-line entry in its Log:
+
+- what went smoothly;
+- what the agent had to ask about or got wrong.
+
+When the same lesson shows up twice, it becomes a rule, in one of three places:
+
+- `CLAUDE.md`, if every session needs it;
+- the work-order template, if it's about briefing;
+- `lab/README.md`, if it's about how I operate.
+
+This is how the codebase's conventions accumulate in writing instead of in my head (P2). It is also the evidence for §9's simplification triggers: if agents rarely ask questions and rarely need rework, the work orders can get shorter.
+
+**Token spend is cost too.** For mechanical tasks (a well-specified module with complete acceptance tests), I'll run agents on a smaller model and keep the larger model for design-heavy work and for my own reviews. The model used is recorded in the request's Log, so over time we learn which tasks need which.
 
 ---
 
@@ -316,7 +492,7 @@ The tool stays stdlib-only. PyYAML is available, but it isn't needed until the f
 | 0 | **Adopt the skeleton**: `CLAUDE.md`, `lab/`, `requests/` and its generated page, the §7 validation, CI. One PR, no experiment code, no content changes. | Lab Manager | Everything below |
 | 1 | **Two small content decisions** (relayed): the gate semantics for example G, and correcting the reversed prose in `s-crit-multiconsumer` and `s-decodability-timing`. Can be one request. | Research side decides; Lab Manager edits | Building B and C in parallel with A |
 | 2 | **Pilot: A** (solver plus verification). CPU only, $0. Also serves to calibrate this process: if intake, restatement, custodian check and delivery feel heavy on the simplest possible request, we cut before scaling. | Lab Manager, directly | Every graded result |
-| 3 | **B and C in parallel**, with the episode/batch interface written into both work orders as an explicit contract | Delegated | First training runs |
+| 3 | **B and C in parallel**, as the first two delegations. Before launch I merge the episode/batch interface as types plus a contract test and stub (§5.2), and each request's acceptance tests. This step doubles as the trial of §5's agent process. | Two cloud agents; Lab Manager reviews and merges | First training runs |
 | 4 | **Before the first paid training job**: the pre-registration document exists (example H; its content is research-side), the launcher refuses Phase B/C jobs until it is committed, and the artifact-storage decision is made | Research side writes; Lab Manager enforces | Phase B/C results |
 
 D, E, F and I are research decisions. None of them is on the engineering critical path through step 4.
@@ -371,6 +547,11 @@ In the spirit of `schema.md`'s own "what is deliberately absent":
 - **b. The cost envelope numbers** (§6.3).
 - **c. The Lab Manager continuity point.** If this chat is lost, a new session reading `lab/` should be able to resume the role. Please confirm that is the intent.
 - **d. (Optional) A second cloud environment** without paid-service credentials for delegated sessions. I will check on the first delegation whether sessions inherit RunPod access. If they do, instruction-only restraint (Appendix A, rule 6) is weaker than simply not providing the credential.
+- **e. Agent defaults** (§5.5–5.10). Please confirm or change:
+  - at most two cloud agents at once;
+  - a two-round limit on rework before I re-scope or take over;
+  - a smaller model for mechanical tasks.
+  Also: do you want to start agent sessions yourself sometimes? Either way works, since the brief lives in the repo.
 
 **From the Process Manager:**
 
@@ -402,11 +583,23 @@ This repo is the engineering side of the Belief Circuits research program; READM
 1. Never hand-edit `generated/`. Run `python3 tools/dag.py` and commit its output with the change that caused it.
 2. `program/`, `components/`, `catalogue/`, `records/` change in meaning only with cited authority (a request ID or a dated
    relayed decision) in the commit message. Delegated sessions do not edit them.
-3. The graph's rules are enforced by the tool; never work around a failure. Grounded studies may not depend on derived
-   instruments, and code under `instruments/grounded/` may not import from `instruments/derived/`.
+3. The graph's rules are enforced by the tool; never work around a failure. Imports follow the graph: substrate <- solvers
+   <- training; instruments/derived may import grounded, never the reverse; nothing imports from jobs/. A test checks this.
 4. The repo is public: no credentials, tokens, account identifiers, or personal information, ever.
-5. Acceptance criteria are fixed before the work they judge. If one looks wrong, stop and say so; never adjust it to fit a result.
+5. Acceptance criteria are fixed before the work they judge. Never edit anything under `tests/acceptance/`; if a test
+   looks wrong, stop and say so.
 6. Do not start paid compute. Only the Lab Manager executes jobs whose outputs are claimed as results, from `main`.
+
+## Code conventions
+- Library code is pure: RNGs are passed in, no global seeds, no file/env/network access outside `jobs/`.
+- Public interfaces are what each module's `__init__.py` exports. Change internals freely within scope; propose, never
+  make, public-interface changes.
+- No new dependencies without asking. Run `ruff check`, `ruff format`, and `pytest` before pushing.
+- Never set a meaningful constant (threshold, grid, default, tie-break) that isn't in your work order or a node. Ask.
+
+## Delegated sessions: stop and ask
+Open a draft PR with your question, and stop, if: an acceptance test looks wrong; you need an interface change or a new
+dependency; a choice would change research meaning; or the work would leave your scope. Don't guess.
 
 ## Delivering (delegated sessions)
 Open a PR to `main` titled `req-NNNN: <title>`. Description: what was built; for each acceptance criterion, the test that
@@ -477,3 +670,50 @@ interface contract once merged. B then extends `substrate` with pools, episodes 
 ## Delivery
 (Result / Method / Deviations / Provenance / Reproduce: empty until delivered)
 ```
+
+---
+
+## Appendix C — work-order template (a section of the request file), illustrated with candidate example B
+
+*Illustrative only. The paths and test names show the shape; the real ones are written when B is promoted.*
+
+```markdown
+## Work order
+
+**Goal.** Build the phase-1 data pipeline for `c-substrate`: sample rung-1 opponent policies, build train/test pools
+from a recorded seed, pre-generate trajectories, and tokenize episodes (vocab 4, length 65) for the training loop.
+
+**Scope — you may create or modify only:**
+- src/belief_circuits/substrate/  (except __init__.py's public names, which are fixed below)
+- tests/unit/substrate/
+Everything else is read-only to you.
+
+**Interfaces.**
+- Use (frozen): `substrate.game.outcome`, `substrate.game.sample_policy` (merged with req-0001).
+- Provide (types and contract tests already on main): `Pool`, `Episode`, `tokenize(episode) -> TokenizedEpisode`,
+  `make_pool(size, seed, split) -> Pool`. Contract tests: tests/contract/substrate/.
+
+**Acceptance tests (already on main, currently failing):** tests/acceptance/req-0003/
+- test_no_leak_round_trip: for every episode and round t, the opponent's round-t action is absent from the
+  tokens visible at round t's decision position. A failure prints the offending episode and round.
+- test_pool_determinism: same (size, seed) gives a byte-identical pool.
+- test_split_disjoint: train and test policies never overlap; 50/50 over policies.
+- test_pool_scale: size 4096 builds in under 30 s on 4 CPUs and round-trips through save and load.
+
+**Constraints.** numpy only. CPU only. Unit tests in under 30 s in total. No paid compute.
+
+**Out of scope.** Storage backends beyond local files; phase-2 reactive opponents (keep the joint-state representation
+general, but implement only rung 0 and rung 1 sampling); tokenization variants SELF and SHARED.
+
+**Stop and ask if:** an acceptance or contract test looks wrong; the interfaces above don't fit the work; you need a
+dependency; or you'd have to choose anything with research meaning (e.g. the secondary held-out split's region).
+
+**Done when:** acceptance, contract and unit tests pass, CI is green, and a PR titled `req-0003: substrate data
+pipeline` is open with the required description.
+```
+
+Two things this example shows.
+
+**The no-leak requirement becomes a test.** The research candidates noted that `c-substrate` only says no-leak "must be asserted by a round-trip test", without saying what the test does. Writing the acceptance test is where the Lab Manager has to make that operational. Since what counts as a leak is plainly defined in the node, this is an engineering choice, not a research one, and it is tagged `[proposed]` in the restatement anyway.
+
+**The storage-format question is contained, not decided.** The pool's on-disk format is kept behind the `Pool` interface's save and load. Local files now, anything later, without touching callers. This is how §6.4's deferred decisions stay deferred without blocking work.
