@@ -7,9 +7,11 @@ current state of the process, with no history of its own and no notion of
 it; every other role reads it to know what it owns and what it doesn't.
 
 (Process Manager's own record of what changed here, when, and why lives
-separately, in `process/memory.md` — that file has the history; this file
-only has the current state, the way `program/orientation.md` states the
-program's current shape rather than logging how it got there.)
+separately, in its Claude Code agent memory
+(`.claude/agent-memory/process-manager/MEMORY.md`) — that file has the
+history; this file only has the current state, the way
+`program/orientation.md` states the program's current shape rather than
+logging how it got there.)
 
 **Status:** prototype, revision 0. Ported from the process charter
 maintained in the claude.ai project memory for this program, by request, on
@@ -81,5 +83,5 @@ anticipates: see its proposal §5.6, "a new standing agent — a persistent
 role, like mine — goes to Ramsey as a proposal") needing an entry of its
 own. Is definitional and evaluative, never executional: it has never run
 an experiment, written research code, touched the catalogue, or executed a
-job, and this file — and `process/memory.md` — are written to keep it that
-way.
+job, and this file — and its Claude Code agent memory — are written to
+keep it that way.
