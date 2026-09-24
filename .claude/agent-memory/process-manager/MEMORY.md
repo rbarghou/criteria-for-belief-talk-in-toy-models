@@ -23,38 +23,17 @@ paragraph at the bottom rather than trimming them silently.
 
 ## Log
 
-(newest first)
+(newest first. This role hasn't been invoked for real work yet — the one
+entry below just records that the scaffolding exists. How it came to be
+built is in the repo's git history, not here; this log is for what the
+role does, not how it was set up.)
 
-### 2026-09-24 — Collapsed the memory file into this one, dropped the portability layer
-Earlier passes built a separate `process/memory.md`, reasoning it should
-be readable without depending on Claude Code's conventions, and treated
-this file (`.claude/agent-memory/process-manager/MEMORY.md`) as a one-line
-pointer to it. Simplified on request: use Claude Code's native per-agent
-memory directly rather than building an abstraction layer over it. This
-file is now the actual memory; `process/memory.md` is deleted, and its
-log entries below are carried forward unchanged in substance.
-
-### 2026-09-24 — Split role definitions and memory into separate files
-The first version put role definitions and continuity notes in one file
-and had the agent definition read only that file on entry. Both choices
-were wrong: reading only one file on entry doesn't fit a role whose job is
-checking other roles' *actual* behavior against their written
-definitions, which needs broad reading every time, not a single fixed
-input; and putting the shared role registry and this role's own history in
-one file made it neither a clean spec nor a clean memory. Split into
-`process/roles.md` (the registry, no history — unchanged by this entry)
-and a memory file (history, nothing else — now this file).
-
-### 2026-09-24 — Initial port from claude.ai project memory
-Created the first version of this role's scaffolding: the agent
-definition and role registry, ported from the process charter maintained
-in claude.ai project memory for this program. Prototype for one role only
-(Process Manager), not yet generalized to Research Manager or Backlog
-Custodian. Flagged in the accompanying PR, not resolved here: if this
-mechanism holds up, the authoritative copy of Process Manager's role
-definitions may end up living in `process/roles.md` rather than in
-claude.ai memory, which would partly dissolve the standing rule that
-memory files aren't a channel to the engineering side — for this one role
-only. That's Ramsey's and the existing Process Manager chat's call, not
-something this file should decide by quietly becoming the source of
-truth.
+### 2026-09-24 — Scaffolding created
+`.claude/agents/process-manager.md`, `process/roles.md`, and this memory
+file were created, seeding `process/roles.md` with role definitions
+ported from the process charter maintained in claude.ai project memory
+for this program. One open item, not resolved here: whether
+`process/roles.md` should become the authoritative copy of those
+definitions, superseding the claude.ai memory version — that's Ramsey's
+and the existing Process Manager chat's call, not this role's to settle
+unilaterally.
