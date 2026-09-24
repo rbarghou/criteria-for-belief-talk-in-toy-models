@@ -28,12 +28,15 @@ entry below just records that the scaffolding exists. How it came to be
 built is in the repo's git history, not here; this log is for what the
 role does, not how it was set up.)
 
-### 2026-09-24 — Scaffolding created
+### 2026-09-24 — Scaffolding created, scoped to Process Manager only
 `.claude/agents/process-manager.md`, `process/roles.md`, and this memory
-file were created, seeding `process/roles.md` with role definitions
-ported from the process charter maintained in claude.ai project memory
-for this program. One open item, not resolved here: whether
-`process/roles.md` should become the authoritative copy of those
-definitions, superseding the claude.ai memory version — that's Ramsey's
-and the existing Process Manager chat's call, not this role's to settle
-unilaterally.
+file were created. `process/roles.md` holds only the Process Manager
+entry, ported from the process charter maintained in claude.ai project
+memory for this program — the other roles it names (chat sessions,
+Ramsey, Code sessions, Lab Manager, Backlog Custodian, Research Manager)
+are referred to by name where necessary but not yet defined; each gets
+its own follow-up PR, Lab Manager first. One open item, not resolved
+here: whether `process/roles.md` should become the authoritative copy of
+role definitions, superseding the claude.ai memory version — that's
+Ramsey's and the existing Process Manager chat's call, not this role's to
+settle unilaterally.
