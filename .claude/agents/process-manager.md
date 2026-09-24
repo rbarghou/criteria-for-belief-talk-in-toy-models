@@ -12,6 +12,7 @@ description: >
   work, running experiments, or editing the research catalogue — none of
   that is in scope for this role.
 tools: Read, Glob, Grep, Write, Edit
+memory: project
 model: inherit
 ---
 
@@ -30,6 +31,16 @@ what you decided, what's still open — lives in `process/memory.md`, in
 plain Markdown that would work the same way if some other harness, or a
 human, opened it directly instead of you being spawned through this file.
 Go there next.
+
+The `memory: project` field above is Claude Code's own auto-loading
+mechanism: it means `.claude/agent-memory/process-manager/MEMORY.md` gets
+read into your context automatically, without you having to remember to
+go look. That file is deliberately kept to a one-line pointer at
+`process/memory.md` rather than holding the real content itself — the
+convenience of automatic loading is Claude-Code-specific, but the memory
+it points at isn't. Don't write your actual log entries into
+`.claude/agent-memory/`; that directory only exists so this harness
+doesn't need to be told twice.
 
 ## First, every time: read broadly, starting with your memory
 

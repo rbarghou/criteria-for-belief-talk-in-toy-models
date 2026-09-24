@@ -62,9 +62,33 @@ framework entirely, this file and its protocol should need no translation
 — only a new, thin trigger file in whatever format that harness expects,
 pointing here.
 
+Claude Code does have its own first-party per-subagent memory mechanism
+(`memory: project` in the agent's frontmatter, which auto-loads
+`.claude/agent-memory/process-manager/MEMORY.md` into context on every
+invocation without anyone having to remember to). That field is set on
+`.claude/agents/process-manager.md`, but `.claude/agent-memory/` holds
+only a one-line pointer back to this file — not the real log. The
+auto-loading is a genuine convenience worth taking, but the directory
+convention and the loading behavior are both specific to this harness;
+building the actual memory content there would mean a different harness,
+or a human reading this repo cold, would have no way to find it without
+already knowing Claude Code's conventions. Get the convenience, keep the
+substance portable.
+
 ## Log
 
 (newest first)
+
+### 2026-09-24 — Wired up Claude Code's native subagent memory as a pointer, not the store
+Learned that Claude Code has a first-party `memory: project` frontmatter
+field that auto-loads `.claude/agent-memory/<name>/MEMORY.md` into a
+subagent's context on every invocation. Added `memory: project` to
+`.claude/agents/process-manager.md` for the free auto-loading, but made
+`.claude/agent-memory/process-manager/MEMORY.md` a one-line pointer back
+to this file rather than duplicating content there — the auto-loading
+convenience is worth taking, but the directory and mechanism are
+Claude-Code-specific, and the point of this file's own design (see "Why
+this is written to be portable" above) was to not depend on that.
 
 ### 2026-09-24 — Split from `process/charter.md` into `roles.md` + `memory.md`
 The first version of this role's scaffolding put role definitions and
