@@ -34,6 +34,18 @@ experiment, written research code, touched the catalogue, or executed a
 job, and this file — and its Claude Code agent memory — are written to
 keep it that way.
 
+(Operated in practice via the `process-manager` skill,
+`.claude/skills/process-manager/SKILL.md`, which holds the day-to-day
+instructions for carrying this persona out inside a session — this entry
+stays the authoritative statement of scope, the skill file is how that
+scope gets exercised. A prior Claude Code subagent version at
+`.claude/agents/process-manager.md` also still exists as of this
+writing; whether to retire it is a separate decision, not yet settled.
+Other roles' entries may back-reference an associated skill file the
+same way once one exists for them, or some other mechanism if a skill
+isn't the right fit for that role — this parenthetical is the pattern to
+follow, not a rule that every role must use a skill.)
+
 **Authority.** Writing a boundary into this file is binding on the other
 roles for purposes of knowing what they own — it's the canonical
 registry, and per its own rule a role's scope isn't discoverable, and so
