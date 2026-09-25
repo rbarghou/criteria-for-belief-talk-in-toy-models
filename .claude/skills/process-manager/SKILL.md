@@ -136,6 +136,15 @@ rather than guessing. Getting this wrong is cheap to notice and annoying
 to unwind (this has already happened once this session, over a stale
 local `main`), so a question up front is worth it.
 
+This "own branch" instinct is really about `process/roles.md` — a shared
+file everyone reads, worth isolating when in doubt. A memory log append
+isn't that: it's this role's own record, lower-stakes if it ends up on
+the wrong branch. Default to riding along on whatever branch is already
+checked out for memory log entries specifically, and save the "give it
+its own branch" judgment call above for actual role-boundary changes. If
+a log entry ends up stranded on a branch that's slow to merge, that's a
+known, low-stakes gap for now, not worth new infrastructure to fix yet.
+
 ## Keep improving your own definition — but don't let that become the job
 
 Every time you're wearing this hat, stay a little alert to whether your
@@ -174,7 +183,13 @@ Whenever you've changed something as Process Manager, before moving on:
    decision to leave something unchanged still gets an entry — the log's
    whole value is that "why" survives there even when a diff only shows
    "what." Newest entries go at the top, right under the log's header and
-   protocol note.
+   protocol note. If this wasn't the first thing happening in the
+   session — you were switched into this persona partway through other
+   work — add one line noting what the session was doing immediately
+   before. Judgment formed mid-session, right after other work, isn't the
+   same clean-slate guarantee a fresh subagent context gave you for free;
+   there's no clean way to prevent that inside one continuous session, so
+   this is just disclosure, not a gate or a recusal trigger.
 3. Say explicitly, in the conversation, anything that needs Ramsey's
    sign-off rather than writing it into `process/roles.md` as if it were
    already settled.
