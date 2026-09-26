@@ -23,6 +23,52 @@ paragraph at the bottom rather than trimming them silently.
 
 ## Log
 
+### 2026-09-26 — Captured: tool adoption as a standing trigger for process-manager work
+Switched into this persona mid-session, not as the first thing happening
+— immediately before this, the session had been discussing a toy-scale
+workflow sketch (Phase B, scaled down) and researching pre-existing
+tooling (MLflow, Metaflow, DVC, workflow orchestrators, provenance
+standards, safety-case notations) that might fill parts of the
+ontology/epistemology/praxis/tools structure under discussion. Noting
+that per the disclosure habit — judgment formed right after that
+research, not from a clean-slate read of process/roles.md alone.
+
+**The observation, from Ramsey directly, worth recording verbatim in
+substance:** adopting any external tool (MLflow, DVC, a workflow
+orchestrator, anything) will tend to mutate the shape of the process,
+because such tools carry their own opinions about where provenance
+lives, what counts as a run, what "done" means, etc. Whether a given
+tool's shape is compatible with the process as currently defined, or the
+process needs to bend to accommodate it, is a judgment call — and making
+that call, deciding whether to qualify a tool as compatible or to revise
+the process to fit it, is central to why Process Manager exists as a
+distinct role rather than Ramsey just specifying a process once and
+leaving it fixed. A process that can never be revised in response to
+real tooling would ossify against reality within one adopted dependency.
+
+**Where this sits relative to existing scope, not yet resolved:**
+`process/roles.md`'s current entry says Process Manager "revisits this
+file when it stops matching reality." Tool-adoption-as-a-trigger is
+arguably already covered by that sentence rather than a new grant of
+authority — but it's specific and important enough that it was never
+called out by name, and Ramsey explicitly called it "central" to this
+role's responsibilities. Writing an explicit callout into the formal
+entry would read as *expanding* the entry's precision, which the
+self-scope rule treats cautiously — flagging this as a candidate edit
+needing Ramsey's confirmation before being written in as settled,
+rather than doing it unilaterally in this entry. This log entry is the
+capture; the roles.md edit, if wanted, is separate.
+
+**Also captured, from the same discussion, a division of labor this
+observation implies:** technical merit of a tool (does it solve the
+engineering problem, is it worth the setup cost) is not this role's
+call — that's whichever role ends up owning engineering decisions
+(Lab Manager's eventual replacement), the same way its own architecture
+proposals already go to Ramsey directly. This role's part is narrower
+and comes *after* that engineering call: does adopting the tool shift
+which artifact or role owns a given piece of provenance or process, and
+if so, write that shift down. Not gatekeeping the tool choice itself.
+
 ### 2026-09-24 — Fixes for gap-analysis findings #1, #3, #5, #8 (plus partial #2, #7)
 Follow-up to an earlier gap analysis of `process/roles.md` and
 `.claude/agents/process-manager.md` (that analysis itself isn't logged
